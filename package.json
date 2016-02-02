@@ -3,7 +3,6 @@
   "description": "Project scaffolding and build system for static sites using Gulp, PostCSS, and Nunjucks.",
   "version": "0.1.0",
   "private": true,
-  "repository": {},
   "author": {
     "name": "Tyler Buck",
     "email": "tyler.buck@maine.edu"

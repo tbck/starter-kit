@@ -36,8 +36,7 @@ module.exports = {
       name: 'index.js',
       src: [
         srcDir + '/scripts/modernizr-flexbox-detection.js',
-        'node_modules/jquery/dist/jquery.js',
-        srcDir + '/scripts/index.js'
+        'node_modules/jquery/dist/jquery.js'
       ],
       dest: destDir + '/js'
     },
