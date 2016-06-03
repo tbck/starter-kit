@@ -58,7 +58,6 @@ gulp.task('images', function() {
  */
 
 gulp.task('nunjucks', function() {
-  gulpNunjucks.nunjucks.configure(config.nunjucks.src, { watch: false });
   return gulp.src(config.nunjucks.pages)
     .pipe(gulpPlumber(onError))
     .pipe(gulpData(function() {
@@ -66,7 +65,12 @@ gulp.task('nunjucks', function() {
         data: requireGlob.sync(config.nunjucks.data, { bustCache: true })
       };
     }))
-    .pipe(gulpNunjucks({ site: config.root }))
+    .pipe(gulpNunjucks({
+      path: config.nunjucks.src,
+      data: {
+        site: config.root
+      }
+    }))
     .pipe(gulpHtmlmin({ collapseWhitespace: true, conservativeCollapse: true }))
     .pipe(gulp.dest(config.nunjucks.dest));
 });
@@ -164,29 +168,30 @@ gulp.task('stylelint', function() {
 
 gulp.task('watch', function() {
   var watchOpts = {};
+  var batchOpts = { timeout: 250 };
   function flatten(prev, current) {
     return prev.concat(current.src);
   }
   // copy static assets
   var staticFiles = config.copy.reduce(flatten, []);
-  gulpWatch(staticFiles, watchOpts, gulpBatch(function(e, cb) {
+  gulpWatch(staticFiles, watchOpts, gulpBatch(batchOpts, function(e, cb) {
     gulp.start('copy', cb);
   }));
   // images
-  gulpWatch(config.images.src, watchOpts, gulpBatch(function(e, cb) {
+  gulpWatch(config.images.src, watchOpts, gulpBatch(batchOpts, function(e, cb) {
     gulp.start('images', cb);
   }));
   // nunjucks
-  gulpWatch(config.nunjucks.watch, watchOpts, gulpBatch(function(e, cb) {
+  gulpWatch(config.nunjucks.watch, watchOpts, gulpBatch(batchOpts, function(e, cb) {
     gulp.start('nunjucks', cb);
   }));
   // scripts
   var scriptFiles = config.scripts.reduce(flatten, []);
-  gulpWatch(scriptFiles, watchOpts, gulpBatch(function(e, cb) {
+  gulpWatch(scriptFiles, watchOpts, gulpBatch(batchOpts, function(e, cb) {
     gulp.start('scripts', cb);
   }));
   // styles
-  gulpWatch(config.styles.watch, watchOpts, gulpBatch(function(e, cb) {
+  gulpWatch(config.styles.watch, watchOpts, gulpBatch(batchOpts, function(e, cb) {
     gulp.start(['stylelint', 'styles'], cb);
   }));
 });
